@@ -1,96 +1,107 @@
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    TextField,
-    MenuItem,
-  } from "@mui/material";
-  import { useState, useEffect } from "react";
-  import { STATES } from "../../utils/constants";
-  
-  export default function FilterDialog({
-    open,
-    onClose,
-    filters,
-    onApply,
-  }) {
-    const [tempFilters, setTempFilters] = useState(filters);
-  
-    useEffect(() => {
-      setTempFilters(filters);
-    }, [filters, open]);
-  
-    return (
-      <Dialog open={open} onClose={onClose} fullWidth>
-        <DialogTitle>Filter Employees</DialogTitle>
-  
-        <DialogContent>
-          {/* GENDER */}
-          <TextField
-            select
-            fullWidth
-            label="Gender"
-            margin="normal"
-            value={tempFilters.gender}
-            onChange={(e) =>
-              setTempFilters({ ...tempFilters, gender: e.target.value })
-            }
-          >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="Male">Male</MenuItem>
-            <MenuItem value="Female">Female</MenuItem>
-            <MenuItem value="Other">Other</MenuItem>
-          </TextField>
-  
-          {/* STATUS */}
-          <TextField
-            select
-            fullWidth
-            label="Status"
-            margin="normal"
-            value={tempFilters.status}
-            onChange={(e) =>
-              setTempFilters({ ...tempFilters, status: e.target.value })
-            }
-          >
-            <MenuItem value="">All</MenuItem>
-            <MenuItem value="active">Active</MenuItem>
-            <MenuItem value="inactive">Inactive</MenuItem>
-          </TextField>
-  
-          {/* STATE */}
-          <TextField
-            select
-            fullWidth
-            label="State"
-            margin="normal"
-            value={tempFilters.state}
-            onChange={(e) =>
-              setTempFilters({ ...tempFilters, state: e.target.value })
-            }
-          >
-            <MenuItem value="">All</MenuItem>
-            {STATES.map((state) => (
-              <MenuItem key={state} value={state}>
-                {state}
-              </MenuItem>
-            ))}
-          </TextField>
-        </DialogContent>
-  
-        <DialogActions>
-          <Button variant="contained" color="error" onClick={onClose}>Close</Button>
-          <Button
-          color="success"
-            variant="contained"
-            onClick={() => onApply(tempFilters)}
-          >
-            Apply
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  }
-  
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  MenuItem,
+  Box,
+} from "@mui/material";
+import { useState, useEffect } from "react";
+import { STATES } from "../constants/states";
+
+
+export default function FilterDialog({
+  open,
+  onClose,
+  onApply,
+  filters,
+}) {
+  const [localFilters, setLocalFilters] = useState(filters);
+
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters, open]);
+
+  const handleChange = (field, value) => {
+    setLocalFilters((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleApply = () => {
+    onApply(localFilters);
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle
+        sx={{ textAlign: "center", fontWeight: "bold" }}
+      >
+        Filter Employees
+      </DialogTitle>
+
+      <DialogContent>
+        {/* GENDER */}
+        <TextField
+          fullWidth
+          select
+          label="Gender"
+          margin="normal"
+          value={localFilters.gender}
+          onChange={(e) =>
+            handleChange("gender", e.target.value)
+          }
+        >
+          <MenuItem value="">All</MenuItem>
+          <MenuItem value="Male">Male</MenuItem>
+          <MenuItem value="Female">Female</MenuItem>
+        </TextField>
+
+        {/* STATUS */}
+        <TextField
+          fullWidth
+          select
+          label="Status"
+          margin="normal"
+          value={localFilters.status}
+          onChange={(e) =>
+            handleChange("status", e.target.value)
+          }
+        >
+          <MenuItem value="">All</MenuItem>
+          <MenuItem value="active">Active</MenuItem>
+          <MenuItem value="inactive">Inactive</MenuItem>
+        </TextField>
+
+        {/* 🔥 STATE DROPDOWN (FULL LIST) */}
+        <TextField
+          fullWidth
+          select
+          label="State"
+          margin="normal"
+          value={localFilters.state}
+          onChange={(e) =>
+            handleChange("state", e.target.value)
+          }
+        >
+          <MenuItem value="">All</MenuItem>
+          {STATES.map((state) => (
+            <MenuItem key={state} value={state}>
+              {state}
+            </MenuItem>
+          ))}
+        </TextField>
+      </DialogContent>
+
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button onClick={onClose}>Close</Button>
+        <Button variant="contained" onClick={handleApply}>
+          Apply
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
