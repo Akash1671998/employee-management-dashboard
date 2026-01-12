@@ -8,11 +8,17 @@ import FilterDialog from "../components/Employee/FilterDialog";
 import ConfirmDialog from "../components/common/ConfirmDialog";
 
 import { getEmployees, saveEmployees } from "../utils/storage";
+import NotificationBar from "../components/common/NotificationBar";
 
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState([]);
   const [openForm, setOpenForm] = useState(false);
   const [editData, setEditData] = useState(null);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
 
   const [search, setSearch] = useState("");
   const [filterOpen, setFilterOpen] = useState(false);
@@ -26,25 +32,50 @@ export default function EmployeesPage() {
     setEmployees(getEmployees());
   }, []);
 
+
+
+  const showSnackbar = (message, severity = "success") => {
+    setSnackbar({
+      open: true,
+      message,
+      severity,
+    });
+  };
+
+  
   const handleSave = (data) => {
-    let updated;
-    if (editData) {
-      updated = employees.map((e) =>
-        e.id === editData.id ? { ...data, id: e.id } : e
-      );
-    } else {
-      updated = [...employees, { ...data, id: Date.now() }];
+    try {
+      let updated;
+  
+      if (editData) {
+        updated = employees.map((e) =>
+          e.id === editData.id ? { ...data, id: e.id } : e
+        );
+        showSnackbar("Employee updated successfully");
+      } else {
+        updated = [...employees, { ...data, id: Date.now() }];
+        showSnackbar("Employee added successfully");
+      }
+  
+      setEmployees(updated);
+      saveEmployees(updated);
+      setEditData(null);
+    } catch (error) {
+      showSnackbar("Unable to save employee", "error");
     }
-    setEmployees(updated);
-    saveEmployees(updated);
-    setEditData(null);
   };
 
   const confirmDelete = () => {
-    const updated = employees.filter((e) => e.id !== deleteId);
-    setEmployees(updated);
-    saveEmployees(updated);
-    setDeleteId(null);
+    try {
+      const updated = employees.filter((e) => e.id !== deleteId);
+      setEmployees(updated);
+      saveEmployees(updated);
+      setDeleteId(null);
+  
+      showSnackbar("Employee deleted successfully");
+    } catch (error) {
+      showSnackbar("Unable to delete employee", "error");
+    }
   };
 
   const handleApplyFilters = (appliedFilters) => {
@@ -116,6 +147,12 @@ export default function EmployeesPage() {
         onCancel={() => setDeleteId(null)}
         onConfirm={confirmDelete}
       />
+      <NotificationBar
+  open={snackbar.open}
+  message={snackbar.message}
+  severity={snackbar.severity}
+  onClose={() => setSnackbar({ ...snackbar, open: false })}
+/>
     </>
   );
 }
