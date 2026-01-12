@@ -9,6 +9,7 @@ import {
   Divider,
   IconButton,
   InputAdornment,
+  Alert,
 } from "@mui/material";
 
 import BusinessIcon from "@mui/icons-material/Business";
@@ -22,50 +23,43 @@ import { useNavigate } from "react-router-dom";
 export default function Login() {
   const navigate = useNavigate();
 
+  // 🔐 state
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
+  // ✅ ONLY CHANGE: strict admin login
   const handleLogin = () => {
-    // mock login
-    localStorage.setItem("isAuth", "true");
-    navigate("/employees"); // default page
+    if (username === "admin" && password === "admin") {
+      localStorage.setItem("isAuth", "true");
+      setError("");
+      navigate("/employees");
+    } else {
+      setError("Invalid credentials. Use admin / admin");
+    }
   };
 
   return (
-    <Box display="flex" height="100vh" width="100%">
-      {/* ================= LEFT BRANDING ================= */}
+    <Box sx={{ display: "flex", height: "100vh", width: "100%" }}>
+      {/* ================= LEFT BRANDING (AS BEFORE) ================= */}
       <Box
-        flex={1}
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        justifyContent="center"
         sx={{
-          position: "relative",
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
           background: "linear-gradient(135deg, #1565c0, #42a5f5)",
           color: "#fff",
-          overflow: "hidden",
         }}
       >
-        {/* Decorative circle */}
-        <Box
-          sx={{
-            position: "absolute",
-            width: 300,
-            height: 300,
-            borderRadius: "50%",
-            background: "rgba(255,255,255,0.08)",
-            top: -60,
-            left: -60,
-          }}
-        />
-
-        {/* Logo */}
         <Box
           sx={{
             width: 140,
             height: 140,
             borderRadius: "50%",
-            backgroundColor: "rgba(255,255,255,0.15)",
+            backgroundColor: "rgba(255,255,255,0.18)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -80,21 +74,20 @@ export default function Login() {
           Employee Manager
         </Typography>
 
-        <Typography
-          variant="body1"
-          sx={{ mt: 1, opacity: 0.9, letterSpacing: 0.5 }}
-        >
-          Manage your workforce efficiently
+        <Typography sx={{ mt: 1, opacity: 0.9 }}>
+          Admin Panel – Demo Login
         </Typography>
       </Box>
 
-      {/* ================= RIGHT LOGIN ================= */}
+      {/* ================= RIGHT LOGIN CARD ================= */}
       <Box
-        flex={1}
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        bgcolor="#f4f6f8"
+        sx={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "#f4f6f8",
+        }}
       >
         <Card
           sx={{
@@ -104,40 +97,41 @@ export default function Login() {
           }}
         >
           <CardContent sx={{ p: 4 }}>
-            {/* Header */}
-            <Box display="flex" alignItems="center" gap={1.2} mb={1}>
+            <Box display="flex" alignItems="center" gap={1} mb={1}>
               <LockIcon color="primary" />
               <Typography variant="h6" fontWeight="bold">
-                Login to your account
+                Admin Login
               </Typography>
             </Box>
 
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              mb={3}
-            >
-              Enter your credentials to continue
+            <Typography variant="body2" color="text.secondary" mb={2}>
+              Use admin credentials to access the system
             </Typography>
 
-            <Divider sx={{ mb: 3 }} />
+            <Divider sx={{ mb: 2 }} />
 
-            {/* Username */}
+            {error && (
+              <Alert severity="error" sx={{ mb: 2 }}>
+                {error}
+              </Alert>
+            )}
+
             <TextField
               fullWidth
               label="Username"
               margin="normal"
-              InputProps={{ sx: { borderRadius: 2 } }}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
             />
 
-            {/* Password with Show / Hide */}
             <TextField
               fullWidth
               label="Password"
               type={showPassword ? "text" : "password"}
               margin="normal"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               InputProps={{
-                sx: { borderRadius: 2 },
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
@@ -151,23 +145,25 @@ export default function Login() {
               }}
             />
 
-            {/* Login Button */}
             <Button
               fullWidth
               variant="contained"
-              size="large"
               startIcon={<LoginIcon />}
-              sx={{
-                mt: 4,
-                py: 1.2,
-                borderRadius: 2,
-                fontWeight: "bold",
-                letterSpacing: 0.5,
-              }}
+              sx={{ mt: 3, py: 1.2, fontWeight: "bold" }}
               onClick={handleLogin}
             >
               Login
             </Button>
+
+            <Typography
+              variant="caption"
+              display="block"
+              textAlign="center"
+              mt={2}
+              color="text.secondary"
+            >
+              Demo Credentials → <b>admin / admin</b>
+            </Typography>
           </CardContent>
         </Card>
       </Box>
