@@ -25,8 +25,18 @@ Includes authentication, CRUD operations, search, filtering, dashboard analytics
 1. Clone the repository
 2. npm install
 3. npm run dev
-4. Open http://localhost:5173
+4. Open http://localhost:3000
 
 ## Assumptions
 - Authentication is mocked
 - Data persistence via localStorage
+
+
+## Login Credentials (Demo)
+
+This application uses mock authentication for demonstration purposes.
+
+Use the following credentials to log in:
+
+- **Username:** admin
+- **Password:** admin
