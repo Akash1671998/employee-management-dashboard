@@ -138,9 +138,9 @@ export default function EmployeeForm({
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleSubmit}>
-          {editData ? "Update" : "Create"}
+        <Button color ="error" variant="contained" onClick={onClose}>Cancel</Button>
+        <Button color ="success" variant="contained" onClick={handleSubmit}>
+          Apply
         </Button>
       </DialogActions>
     </Dialog>
