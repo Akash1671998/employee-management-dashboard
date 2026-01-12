@@ -1,85 +1,148 @@
+import { useEffect, useState } from "react";
 import {
-    Dialog, DialogTitle, DialogContent,
-    TextField, MenuItem, Switch,
-    Button, Box
-  } from "@mui/material";
-  import { useState, useEffect } from "react";
-  import { STATES, GENDERS } from "../../utils/constants";
-  
-  export default function EmployeeForm({ open, onClose, onSave, editData }) {
-    const [form, setForm] = useState({
-      name: "",
-      gender: "",
-      state: "",
-      active: true,
-    });
-  
-    useEffect(() => {
-      if (editData) setForm(editData);
-    }, [editData]);
-  
-    const handleChange = (e) => {
-      const { name, value, checked, type } = e.target;
-      setForm({ ...form, [name]: type === "checkbox" ? checked : value });
-    };
-  
-    const handleSubmit = () => {
-      if (!form.name || !form.gender || !form.state) return;
-      onSave(form);
-      onClose();
-    };
-  
-    return (
-      <Dialog open={open} onClose={onClose} fullWidth>
-        <DialogTitle>{editData ? "Edit Employee" : "Add Employee"}</DialogTitle>
-  
-        <DialogContent>
-          <TextField
-            fullWidth
-            label="Full Name"
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            margin="normal"
-          />
-  
-          <TextField
-            select
-            fullWidth
-            label="Gender"
-            name="gender"
-            value={form.gender}
-            onChange={handleChange}
-            margin="normal"
-          >
-            {GENDERS.map(g => (
-              <MenuItem key={g} value={g}>{g}</MenuItem>
-            ))}
-          </TextField>
-  
-          <TextField
-            select
-            fullWidth
-            label="State"
-            name="state"
-            value={form.state}
-            onChange={handleChange}
-            margin="normal"
-          >
-            {STATES.map(s => (
-              <MenuItem key={s} value={s}>{s}</MenuItem>
-            ))}
-          </TextField>
-  
-          <Box display="flex" alignItems="center" mt={2}>
-            Active <Switch checked={form.active} name="active" onChange={handleChange} />
-          </Box>
-  
-          <Button fullWidth variant="contained" sx={{ mt: 2 }} onClick={handleSubmit}>
-            Save
-          </Button>
-        </DialogContent>
-      </Dialog>
-    );
-  }
-  
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  MenuItem,
+  Switch,
+  FormControlLabel,
+} from "@mui/material";
+const STATES = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Delhi",
+];
+
+const initialFormState = {
+  name: "",
+  gender: "",
+  state: "",
+  active: true,
+};
+
+export default function EmployeeForm({
+  open,
+  onClose,
+  onSave,
+  editData,
+}) {
+  const [formData, setFormData] = useState(initialFormState);
+  useEffect(() => {
+    if (editData) {
+      setFormData(editData);
+    } else {
+      setFormData(initialFormState);
+    }
+  }, [editData, open]);
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handleSubmit = () => {
+    onSave(formData);
+    if (!editData) {
+      setFormData(initialFormState);
+    }
+
+    onClose();
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle
+        sx={{
+          textAlign: "center",
+          fontWeight: "bold",
+        }}
+      >
+        {editData ? "Edit Employee" : "Add Employee"}
+      </DialogTitle>
+
+      <DialogContent>
+        <TextField
+          fullWidth
+          label="Employee Name"
+          margin="normal"
+          value={formData.name}
+          onChange={(e) => handleChange("name", e.target.value)}
+        />
+        <TextField
+          fullWidth
+          select
+          label="Gender"
+          margin="normal"
+          value={formData.gender}
+          onChange={(e) => handleChange("gender", e.target.value)}
+        >
+          <MenuItem value="Male">Male</MenuItem>
+          <MenuItem value="Female">Female</MenuItem>
+        </TextField>
+        <TextField
+          fullWidth
+          select
+          label="State"
+          margin="normal"
+          value={formData.state}
+          onChange={(e) => handleChange("state", e.target.value)}
+        >
+          {STATES.map((state) => (
+            <MenuItem key={state} value={state}>
+              {state}
+            </MenuItem>
+          ))}
+        </TextField>
+        <FormControlLabel
+          sx={{ mt: 1 }}
+          control={
+            <Switch
+              checked={formData.active}
+              onChange={(e) =>
+                handleChange("active", e.target.checked)
+              }
+            />
+          }
+          label="Active"
+        />
+      </DialogContent>
+
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button onClick={onClose}>Cancel</Button>
+        <Button variant="contained" onClick={handleSubmit}>
+          {editData ? "Update" : "Create"}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
